@@ -1,1 +1,114 @@
-Homepage
+<!doctype html>
+<html lang="en">
+  <head>
+	<title>Remote Diagnostic System - Login</title>
+	
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="format.css" rel="stylesheet">
+
+    <style>
+		.bd-placeholder-img {
+			font-size: 1.125rem;
+			text-anchor: middle;
+		}
+		
+		#center_s{
+			position: absolute;
+			top: 46%;
+			left: 50%;
+			margin-top: -50px;
+			margin-left: -50px;
+		}
+		
+	  </style>
+    <link href="menu.css" rel="stylesheet">
+  </head>
+  <body>
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3">Remote Diagnostic System</a>
+  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="sidebar-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="index.html">Login<span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</div>
+
+<div id="center_s">
+
+<script>
+
+function myLogin() {
+	var v_user = document.getElementById("f_user").value;
+	var v_pass = document.getElementById("f_pass").value;
+	
+	if ((v_user == "demo") && (v_pass == "demo"))
+	{
+		var version_val = parseInt(navigator.appVersion)
+		
+		if (version_val >= 4 || window.location.replace)
+			 window.location.replace("water.html");		
+		else
+			window.location.href ="water.html";
+	}
+	else
+	{
+		document.getElementById("f_user").value = "";
+		document.getElementById("f_pass").value = "";
+		alert("Incorrect username or password!");
+	}
+}
+
+function myMoveOver(v_Id) {
+	document.getElementById(v_Id + "a").tag = document.getElementById(v_Id + "a").style.backgroundColor;
+
+	document.getElementById(v_Id + "a").style.backgroundColor = "#fff9ae";
+	document.getElementById(v_Id + "b").style.backgroundColor = "#fff9ae";
+}
+
+function myMoveLeave(v_Id) {
+	var v_num = v_Id.substr(2);
+	var v_bg = "#fff";
+
+	if (Number.isInteger(v_num / 2))
+		v_bg = "#e6ecff";
+	
+	document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
+	document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
+}
+
+</script>
+
+<form onsubmit="myLogin(); return false;">
+<table cellpadding="6" cellspacing="2" border="0" style="border: 1px solid black;">
+	<tr>
+		<td>
+			Username:<br>
+			<input type="text" id="f_user" name="f_user" autofocus><br>
+
+			Password:<br>
+			<input type="password" id="f_pass" name="f_pass"><br>
+			
+			<div align="center" style="margin-top: 5px;"><input type="submit" value="Login"></div>
+		</td>			
+	</tr>
+</table>
+</form>
+
+</div>	
+
+
+</body>
+</html>
