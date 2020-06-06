@@ -43,11 +43,16 @@
 		td.wb_b {
 			background-color: #e6ecff;
 			text-align: right;
+		}
+		
+		td.wb_x {
+			background-color: red;
+			text-align: right;
 		}	
 	  </style>
     <link href="menu.css" rel="stylesheet">
   </head>
-  <body>
+  <body onload="myOnLoad()">
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3">Remote Diagnostic System</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,9 +84,36 @@
 
 <script>
 
-function myMoveOver(v_Id) {
-	document.getElementById(v_Id + "a").tag = document.getElementById(v_Id + "a").style.backgroundColor;
+function myOnLoad()
+{
+	var vError = "#ff985d";
 
+	document.getElementById("wb21a").tag = "Error";
+	document.getElementById("wb21a").style.backgroundColor = vError;
+	document.getElementById("wb21b").style.backgroundColor = vError;
+
+	document.getElementById("wb31a").tag = "Error";
+	document.getElementById("wb31a").style.backgroundColor = vError;
+	document.getElementById("wb31b").style.backgroundColor = vError;
+
+	document.getElementById("wb61a").tag = "Error";
+	document.getElementById("wb61a").style.backgroundColor = vError;
+	document.getElementById("wb61b").style.backgroundColor = vError;
+
+	document.getElementById("wb23a").tag = "Error";
+	document.getElementById("wb23a").style.backgroundColor = vError;
+	document.getElementById("wb23b").style.backgroundColor = vError;
+
+	document.getElementById("wb33a").tag = "Error";
+	document.getElementById("wb33a").style.backgroundColor = vError;
+	document.getElementById("wb33b").style.backgroundColor = vError;
+
+	document.getElementById("wb54a").tag = "Error";
+	document.getElementById("wb54a").style.backgroundColor = vError;
+	document.getElementById("wb54b").style.backgroundColor = vError;
+}
+
+function myMoveOver(v_Id) {
 	document.getElementById(v_Id + "a").style.backgroundColor = "#fff9ae";
 	document.getElementById(v_Id + "b").style.backgroundColor = "#fff9ae";
 }
@@ -93,8 +125,20 @@ function myMoveLeave(v_Id) {
 	if (Number.isInteger(v_num / 2))
 		v_bg = "#e6ecff";
 	
-	document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
-	document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
+	var vTag = document.getElementById(v_Id + "a").tag;
+	
+	if (vTag == "Error")
+	{
+		var vError = "#ff985d";
+
+		document.getElementById(v_Id + "a").style.backgroundColor = vError;
+		document.getElementById(v_Id + "b").style.backgroundColor = vError;
+	}	
+	else
+	{
+		document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
+		document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
+	}
 }
 
 function myOnChange() {
@@ -106,12 +150,16 @@ function myOnChange() {
 		v_display.innerHTML = "<br>";
 		v_display.style = "padding: 0px;"
 		
+		document.getElementById("t_r01").style.visibility = "visible";		
+		document.getElementById("t_r02").style.visibility = "visible";		
 		document.getElementById("t_r1").style.visibility = "visible";
 		document.getElementById("t_r2").style.visibility = "visible";
 		document.getElementById("t_r3").style.visibility = "visible";
 	}
 	else
 	{
+		document.getElementById("t_r01").style.visibility = "hidden";
+		document.getElementById("t_r02").style.visibility = "hidden";
 		document.getElementById("t_r1").style.visibility = "hidden";
 		document.getElementById("t_r2").style.visibility = "hidden";
 		document.getElementById("t_r3").style.visibility = "hidden";
@@ -145,6 +193,22 @@ function myOnChange() {
 		</td>
 	</tr>
 
+	<tr id="t_r01">
+		<td colspan="3" id="t_display01">
+			<br>
+		</td>
+	</tr>
+	
+	<tr id="t_r02">
+		<td colspan="3" id="t_display02">
+		
+			<div width="100%" style="margin-left: 15px; margin-right: 15px; padding: 3px; border: 2px dashed black; background-color: #fffcd9; font-size: 16px;">
+				Warning: There are currently 5 solar bores at 4 different locations that are out of service and require maintenance.
+			</div>
+			
+		</td>
+	</tr>
+	
 	<tr>
 		<td colspan="3" id="t_display">
 			<br>
