@@ -27,28 +27,37 @@
 		td.wb_title {
 			font-size: 24px;
 			background-color: #fff;
+			cursor: pointer;
 		}
 		
 		td.wb_heading {
 			background-color: #e6ecff;
 			border-top: 1px solid black;
 			border-bottom: 1px solid black;
+			cursor: pointer;
 		}
 		
 		td.wb_a {
 			background-color: #fff;
 			text-align: right;
+			cursor: pointer;
 		}
 		
 		td.wb_b {
 			background-color: #e6ecff;
 			text-align: right;
+			cursor: pointer;
 		}
 		
-		td.wb_x {
-			background-color: red;
-			text-align: right;
-		}	
+		div.warning
+		{
+			margin-left: 15px;
+			margin-right: 15px;
+			padding: 3px 8px;
+			border: 2px dashed black;
+			background-color: #fff9ae;
+			font-size: 16px;
+		}
 	  </style>
     <link href="menu.css" rel="stylesheet">
   </head>
@@ -84,38 +93,46 @@
 
 <script>
 
+var g_MouseOver;
+var v_Error;
+
 function myOnLoad()
 {
-	var vError = "#ff985d";
+	v_Error = "#ffaa8f";
 
 	document.getElementById("wb21a").tag = "Error";
-	document.getElementById("wb21a").style.backgroundColor = vError;
-	document.getElementById("wb21b").style.backgroundColor = vError;
+	document.getElementById("wb21a").style.backgroundColor = v_Error;
+	document.getElementById("wb21b").style.backgroundColor = v_Error;
 
 	document.getElementById("wb31a").tag = "Error";
-	document.getElementById("wb31a").style.backgroundColor = vError;
-	document.getElementById("wb31b").style.backgroundColor = vError;
+	document.getElementById("wb31a").style.backgroundColor = v_Error;
+	document.getElementById("wb31b").style.backgroundColor = v_Error;
 
 	document.getElementById("wb61a").tag = "Error";
-	document.getElementById("wb61a").style.backgroundColor = vError;
-	document.getElementById("wb61b").style.backgroundColor = vError;
+	document.getElementById("wb61a").style.backgroundColor = v_Error;
+	document.getElementById("wb61b").style.backgroundColor = v_Error;
 
 	document.getElementById("wb23a").tag = "Error";
-	document.getElementById("wb23a").style.backgroundColor = vError;
-	document.getElementById("wb23b").style.backgroundColor = vError;
+	document.getElementById("wb23a").style.backgroundColor = v_Error;
+	document.getElementById("wb23b").style.backgroundColor = v_Error;
 
 	document.getElementById("wb33a").tag = "Error";
-	document.getElementById("wb33a").style.backgroundColor = vError;
-	document.getElementById("wb33b").style.backgroundColor = vError;
+	document.getElementById("wb33a").style.backgroundColor = v_Error;
+	document.getElementById("wb33b").style.backgroundColor = v_Error;
 
 	document.getElementById("wb54a").tag = "Error";
-	document.getElementById("wb54a").style.backgroundColor = vError;
-	document.getElementById("wb54b").style.backgroundColor = vError;
+	document.getElementById("wb54a").style.backgroundColor = v_Error;
+	document.getElementById("wb54b").style.backgroundColor = v_Error;
 }
 
 function myMoveOver(v_Id) {
-	document.getElementById(v_Id + "a").style.backgroundColor = "#fff9ae";
-	document.getElementById(v_Id + "b").style.backgroundColor = "#fff9ae";
+	g_MouseOver = v_Id;
+	
+	document.getElementById(v_Id + "a").style.backgroundColor = "#b0ff99";
+	document.getElementById(v_Id + "b").style.backgroundColor = "#b0ff99";
+	
+	document.getElementById(v_Id + "a").style.borderLeft = "2px solid black";
+	document.getElementById(v_Id + "b").style.borderRight = "2px solid black";
 }
 
 function myMoveLeave(v_Id) {
@@ -129,16 +146,17 @@ function myMoveLeave(v_Id) {
 	
 	if (vTag == "Error")
 	{
-		var vError = "#ff985d";
-
-		document.getElementById(v_Id + "a").style.backgroundColor = vError;
-		document.getElementById(v_Id + "b").style.backgroundColor = vError;
+		document.getElementById(v_Id + "a").style.backgroundColor = v_Error;
+		document.getElementById(v_Id + "b").style.backgroundColor = v_Error;
 	}	
 	else
 	{
 		document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
 		document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
 	}
+	
+	document.getElementById(v_Id + "a").style.borderWidth = "0px";
+	document.getElementById(v_Id + "b").style.borderWidth = "0px";
 }
 
 function myOnChange() {
@@ -169,6 +187,13 @@ function myOnChange() {
 	}
 }
 
+function myOnClick(v_Table)
+{
+	myMoveLeave(g_MouseOver);
+	document.getElementById("d_location").value = "loc" + v_Table;
+	myOnChange();
+}
+
 </script>
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 0px solid black; padding: 3px;">
@@ -193,24 +218,24 @@ function myOnChange() {
 		</td>
 	</tr>
 
-	<tr id="t_r01">
-		<td colspan="3" id="t_display01">
+	<tr>
+		<td colspan="3" id="t_display">
 			<br>
 		</td>
 	</tr>
 	
-	<tr id="t_r02">
-		<td colspan="3" id="t_display02">
+	<tr id="t_r01">
+		<td colspan="3" id="t_display01">
 		
-			<div width="100%" style="margin-left: 15px; margin-right: 15px; padding: 3px; border: 2px dashed black; background-color: #fffcd9; font-size: 16px;">
-				Warning: There are currently 5 solar bores at 4 different locations that are out of service and require maintenance.
+			<div width="100%" class="warning">
+				Warning: There are currently 6 solar bores at 4 different locations that require maintenance.
 			</div>
 			
 		</td>
 	</tr>
 	
-	<tr>
-		<td colspan="3" id="t_display">
+	<tr id="t_r02">
+		<td colspan="3" id="t_display02">
 			<br>
 		</td>
 	</tr>
@@ -218,7 +243,7 @@ function myOnChange() {
 	<tr id="t_r1">
 		<td width="33%" align="center" id="tb1">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(1)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 1</td>
 				</tr>
@@ -245,7 +270,7 @@ function myOnChange() {
 		</td>
 		<td width="33%" align="center" id="tb2">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(2)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 2</td>
 				</tr>
@@ -272,7 +297,7 @@ function myOnChange() {
 		</td>
 		<td width="33%" align="center" id="tb3">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(3)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 3</td>
 				</tr>
@@ -306,7 +331,7 @@ function myOnChange() {
 	<tr id="t_r3">
 		<td align="center" id="tb4">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(4)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 4</td>
 				</tr>
@@ -333,7 +358,7 @@ function myOnChange() {
 		</td>
 		<td align="center" id="tb5">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(5)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 5</td>
 				</tr>
@@ -360,7 +385,7 @@ function myOnChange() {
 		</td>
 		<td align="center" id="tb6">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(6)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 6</td>
 				</tr>
@@ -382,6 +407,7 @@ function myOnChange() {
 				<tr id="tr_a" onmouseover="myMoveOver('wb65')" onmouseleave="myMoveLeave('wb65')">
 					<td class="wb_a" id="wb65a">5</td><td class="wb_a" id="wb65b">682.7</td>
 				</tr>
+
 			</table>
 			
 		</td>
