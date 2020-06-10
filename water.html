@@ -193,6 +193,15 @@ function myMoveLeave(v_Id) {
 	if (Number.isInteger(v_num / 2))
 		v_bg = "#e6ecff";
 	
+	var vNum = document.getElementById(v_Id + "a").id.substr(2,2);
+	
+	if (vNum == "21" || vNum == "23" || vNum == "31" || vNum == "34" || vNum == "54" || vNum == "61")
+	{
+		document.getElementById(v_Id + "a").style.backgroundColor = g_Error;
+		document.getElementById(v_Id + "b").style.backgroundColor = g_Error;
+		return;
+	}
+	
 	var vTag = document.getElementById(v_Id + "a").tag;
 	
 	if (vTag == "Error")
