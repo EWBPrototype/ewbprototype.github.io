@@ -174,33 +174,35 @@ function myMoveOver(v_Id) {
 	document.getElementById(v_Id + "b").style.borderRight = "2px solid black";
 }
 
-function myMoveLeave(v_Id) {
+function myMoveLeave(v_Id)
+{
 	var v_num = v_Id.substr(2);
 	var v_bg = "#fff";
 
 	if (Number.isInteger(v_num / 2))
 		v_bg = "#e6ecff";
-
+	
 	var vNum = document.getElementById(v_Id + "a").id.substr(2,2);
 	
 	if (vNum == "23" || vNum == "42" || vNum == "45")
 	{
 		document.getElementById(v_Id + "a").style.backgroundColor = g_Error;
 		document.getElementById(v_Id + "b").style.backgroundColor = g_Error;
-		return;
 	}
-
-	var vTag = document.getElementById(v_Id + "a").tag;
-	
-	if (vTag == "Error")
-	{
-		document.getElementById(v_Id + "a").style.backgroundColor = g_Error;
-		document.getElementById(v_Id + "b").style.backgroundColor = g_Error;
-	}	
 	else
 	{
-		document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
-		document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
+		var vTag = document.getElementById(v_Id + "a").tag;
+		
+		if (vTag == "Error")
+		{
+			document.getElementById(v_Id + "a").style.backgroundColor = g_Error;
+			document.getElementById(v_Id + "b").style.backgroundColor = g_Error;
+		}	
+		else
+		{
+			document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
+			document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
+		}
 	}
 	
 	document.getElementById(v_Id + "a").style.borderWidth = "0px";
