@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Remote Diagnostic System - Solar Panel Current</title>
+  	<title>Remote Diagnostic System - Water Pressure</title>
 	
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,27 +27,41 @@
 		td.wb_title {
 			font-size: 24px;
 			background-color: #fff;
+			cursor: pointer;
 		}
 		
 		td.wb_heading {
 			background-color: #e6ecff;
 			border-top: 1px solid black;
 			border-bottom: 1px solid black;
+			cursor: pointer;
 		}
 		
 		td.wb_a {
 			background-color: #fff;
 			text-align: right;
+			cursor: pointer;
 		}
 		
 		td.wb_b {
 			background-color: #e6ecff;
 			text-align: right;
-		}	
+			cursor: pointer;
+		}
+		
+		div.warning
+		{
+			margin-left: 15px;
+			margin-right: 15px;
+			padding: 3px 8px;
+			border: 2px dashed black;
+			background-color: #fff9ae;
+			font-size: 16px;
+		}
 	  </style>
     <link href="menu.css" rel="stylesheet">
   </head>
-  <body>
+  <body onload="myOnLoad()">
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3">Remote Diagnostic System</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,11 +93,85 @@
 
 <script>
 
-function myMoveOver(v_Id) {
-	document.getElementById(v_Id + "a").tag = document.getElementById(v_Id + "a").style.backgroundColor;
+var g_MouseOver;
 
-	document.getElementById(v_Id + "a").style.backgroundColor = "#fff9ae";
-	document.getElementById(v_Id + "b").style.backgroundColor = "#fff9ae";
+var g_Error = "#ffaa8f";
+var g_current = 0;
+var g_width = "<img src='ts_width.png'>";
+
+var g_locations = [
+	"<a href='https://www.google.com/maps/@-10.969541,142.3544438,1761m/data=!3m1!1e3' target='_blank'><img src='loc1.png' alt='Location 1'><br>10°58'10.348\"S 142°21'15.997\"E</a>",
+	"<a href='https://www.google.com/maps/@-10.7631309,142.5563538,2096m/data=!3m1!1e3' target='_blank'><img src='loc2.png' alt='Location 2'><br>10°45'47.271\"S 142°33'22.873\"E</a>",
+	"<a href='https://www.google.com/maps/@-11.3230947,142.3418198,2959m/data=!3m1!1e3' target='_blank'><img src='loc3.png' alt='Location 3'><br>11°19'23.141\"S 142°20'30.551\"E</a>",
+	"<a href='https://www.google.com/maps/@-11.7366837,142.5887535,4178m/data=!3m1!1e3' target='_blank'><img src='loc4.png' alt='Location 4'><br>11°44'12.061\"S 142°35'19.512\"E</a>",
+	"<a href='https://www.google.com/maps/@-11.8463457,142.0393626,2483m/data=!3m1!1e3' target='_blank'><img src='loc5.png' alt='Location 5'><br>11°50'46.845\"S 142°2'21.705\"E</a>",
+	"<a href='https://www.google.com/maps/@-10.8416093,142.4463538,1048m/data=!3m1!1e3' target='_blank'><img src='loc6.png' alt='Location 6'><br>10°50'29.793\"S 142°26'46.873\"E</a>"
+];
+
+var g_info = [
+	"All the solar panels at this location are currently operating at full capacity.",
+	"Solar panel #4 requires maintenance as the current detected is not within the ideal operating range.",
+	"All the solar panels at this location are currently operating at full capacity.",
+	"Solar panels #2 and #5 both require maintenance as the current detected is not within the ideal operating range.",
+	"All the solar panels at this location are currently operating at full capacity.",
+	"All the solar panels at this location are currently operating at full capacity."
+];	
+
+var g_visited = [
+	"Technician: John Smith<br>Last visited: 21st Mar, 2020",
+	"Technician: John Smith<br>Last visited: 8th Jun, 2020",
+	"Technician: John Smith<br>Last visited: 12th Jun, 2020",
+	"Technician: Andrew Brown<br>Last visited: 22nd Dec, 2019",
+	"Technician: Andrew Brown<br>Last visited: 3rd Apr, 2020",
+	"Technician: John Smith<br>Last visited: 28th May, 2020"
+];
+
+function myOnLoad()
+{
+	document.getElementById("wb23a").tag = "Error";
+	document.getElementById("wb23a").style.backgroundColor = g_Error;
+	document.getElementById("wb23b").style.backgroundColor = g_Error;
+
+	document.getElementById("wb42a").tag = "Error";
+	document.getElementById("wb42a").style.backgroundColor = g_Error;
+	document.getElementById("wb42b").style.backgroundColor = g_Error;
+	
+	document.getElementById("wb45a").tag = "Error";
+	document.getElementById("wb45a").style.backgroundColor = g_Error;
+	document.getElementById("wb45b").style.backgroundColor = g_Error;
+
+	// Fix table width in Google chrome
+	var isChromium = window.chrome;
+	var winNav = window.navigator;
+	var vendorName = winNav.vendor;
+	var isOpera = typeof window.opr !== "undefined";
+	var isIEedge = winNav.userAgent.indexOf("Edge") > -1;
+	var isIOSChrome = winNav.userAgent.match("CriOS");
+
+	if (isIOSChrome) {
+		// is Google chrome on IOS
+		g_width = "<img src='ts_chrome.png'>";
+	}
+	else if	(isChromium !== null &&	typeof isChromium !== "undefined" && vendorName === "Google Inc." &&	isOpera === false && isIEedge === false)
+	{
+		// is Google chrome
+		g_width = "<img src='ts_chrome.png'>";
+	}
+	else
+	{ 
+		// Not Google chrome
+	}
+	
+}
+
+function myMoveOver(v_Id) {
+	g_MouseOver = v_Id;
+	
+	document.getElementById(v_Id + "a").style.backgroundColor = "#b0ff99";
+	document.getElementById(v_Id + "b").style.backgroundColor = "#b0ff99";
+	
+	document.getElementById(v_Id + "a").style.borderLeft = "2px solid black";
+	document.getElementById(v_Id + "b").style.borderRight = "2px solid black";
 }
 
 function myMoveLeave(v_Id) {
@@ -93,31 +181,65 @@ function myMoveLeave(v_Id) {
 	if (Number.isInteger(v_num / 2))
 		v_bg = "#e6ecff";
 	
-	document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
-	document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
+	var vTag = document.getElementById(v_Id + "a").tag;
+	
+	if (vTag == "Error")
+	{
+		document.getElementById(v_Id + "a").style.backgroundColor = g_Error;
+		document.getElementById(v_Id + "b").style.backgroundColor = g_Error;
+	}	
+	else
+	{
+		document.getElementById(v_Id + "a").style.backgroundColor = v_bg;
+		document.getElementById(v_Id + "b").style.backgroundColor = v_bg;
+	}
+	
+	document.getElementById(v_Id + "a").style.borderWidth = "0px";
+	document.getElementById(v_Id + "b").style.borderWidth = "0px";
 }
 
 function myOnChange() {
 	var v_display = document.getElementById("t_display");
-	var v_change = document.getElementById("d_location").value;
+	g_current = document.getElementById("d_location").value.substr(3);
 	
-	if (v_change == "loc0")
+	if (g_current == "0")
 	{
-		v_display.innerHTML = "<br>";
 		v_display.style = "padding: 0px;"
-		
-		document.getElementById("t_r1").style.visibility = "visible";
-		document.getElementById("t_r2").style.visibility = "visible";
-		document.getElementById("t_r3").style.visibility = "visible";
+		v_display.innerHTML = "<br>";
+
+		document.getElementById("t_r1").style.display = "";
+		document.getElementById("t_r2").style.display = "";
+		document.getElementById("t_r3").style.display = "";
+		document.getElementById("t_r4").style.display = "";
+		document.getElementById("t_r5").style.display = "";
 	}
 	else
 	{
-		document.getElementById("t_r1").style.visibility = "hidden";
-		document.getElementById("t_r2").style.visibility = "hidden";
-		document.getElementById("t_r3").style.visibility = "hidden";
+		document.getElementById("t_r1").style.display = "none";
+		document.getElementById("t_r2").style.display = "none";
+		document.getElementById("t_r3").style.display = "none";
+		document.getElementById("t_r4").style.display = "none";
+		document.getElementById("t_r5").style.display = "none";
 		
 		v_display.style = "padding: 12px;";
-		v_display.innerHTML = document.getElementById("tb" + v_change.substr(3)).innerHTML;
+		
+		var str1 = "<table cellpadding='0' cellspacing'0' border='0' width='100%'><tr><td valign='top' id='td1'>"
+		var str2 = document.getElementById("tb" + g_current).innerHTML + g_width;
+		var str3 = "</td><td valign='top' width='100%'>";
+		var str4 = "</td><td valign='top' align='center'>";
+		var str5 = "</td></tr></table>";
+
+		v_display.innerHTML = str1 + str2 + g_visited[g_current-1] + str3 + g_info[g_current-1] + str4 + g_locations[g_current-1] + str5;
+	}
+}
+
+function myOnClick(v_Table)
+{
+	if (v_Table != g_current)
+	{
+		myMoveLeave(g_MouseOver);
+		document.getElementById("d_location").value = "loc" + v_Table;
+		myOnChange();
 	}
 }
 
@@ -140,188 +262,211 @@ function myOnChange() {
 		</td>
 		<td colspan="2" align="right" style="padding-right: 15px;">
 			
-			Some text to do with current here.
+			Minimum Current Allowed: 912 mA, Maximum Current Allowed: 1141 mA
 			
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="3" id="t_display">
+		<td colspan="3" id="t_display" valign="top">
+			<br>
+		</td>
+	</tr>
+	
+	<tr id="t_r1">
+		<td colspan="3">
+		
+			<div width="100%" class="warning">
+				Warning: There are currently 3 solar panels at 2 different locations that require maintenance.
+			</div>
+			
+		</td>
+	</tr>
+	
+	<tr id="t_r2">
+		<td colspan="3">
 			<br>
 		</td>
 	</tr>
 
-	<tr id="t_r1">
+	<tr id="t_r3">
 		<td width="33%" align="center" id="tb1">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(1)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 1</td>
 				</tr>
 				<tr>
-					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (A)</td>
+					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (mA)</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb11')" onmouseleave="myMoveLeave('wb11')">
-					<td class="wb_a" id="wb11a">1</td><td class="wb_a" id="wb11b">558.3</td>
+					<td class="wb_a" id="wb11a">1</td><td class="wb_a" id="wb11b">1020.1</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb12')" onmouseleave="myMoveLeave('wb12')">
-					<td class="wb_b" id="wb12a">2</td><td class="wb_b" id="wb12b">495.2</td>
+					<td class="wb_b" id="wb12a">2</td><td class="wb_b" id="wb12b">970.3</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb13')" onmouseleave="myMoveLeave('wb13')">
-					<td class="wb_a" id="wb13a">3</td><td class="wb_a" id="wb13b">603.4</td>
+					<td class="wb_a" id="wb13a">3</td><td class="wb_a" id="wb13b">1101.2</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb14')" onmouseleave="myMoveLeave('wb14')">
-					<td class="wb_b" id="wb14a">4</td><td class="wb_b" id="wb14b">702.9</td>
+					<td class="wb_b" id="wb14a">4</td><td class="wb_b" id="wb14b">1070.0</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb15')" onmouseleave="myMoveLeave('wb15')">
-					<td class="wb_a" id="wb15a">5</td><td class="wb_a" id="wb15b">567.8</td>
+					<td class="wb_a" id="wb15a">5</td><td class="wb_a" id="wb15b">991.8</td>
 				</tr>
 			</table>
 			
 		</td>
 		<td width="33%" align="center" id="tb2">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(2)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 2</td>
 				</tr>
 				<tr>
-					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (A)</td>
+					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (mA)</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb21')" onmouseleave="myMoveLeave('wb21')">
-					<td class="wb_a" id="wb21a">1</td><td class="wb_a" id="wb21b">399.3</td>
+					<td class="wb_a" id="wb21a">1</td><td class="wb_a" id="wb21b">1041.6</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb22')" onmouseleave="myMoveLeave('wb22')">
-					<td class="wb_b" id="wb22a">2</td><td class="wb_b" id="wb22b">494.2</td>
+					<td class="wb_b" id="wb22a">2</td><td class="wb_b" id="wb22b">967.5</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb23')" onmouseleave="myMoveLeave('wb23')">
-					<td class="wb_a" id="wb23a">3</td><td class="wb_a" id="wb23b">769.9</td>
+					<td class="wb_a" id="wb23a">3</td><td class="wb_a" id="wb23b">903.2</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb24')" onmouseleave="myMoveLeave('wb24')">
-					<td class="wb_b" id="wb24a">4</td><td class="wb_b" id="wb24b">459.9</td>
+					<td class="wb_b" id="wb24a">4</td><td class="wb_b" id="wb24b">1044.1</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb25')" onmouseleave="myMoveLeave('wb25')">
-					<td class="wb_a" id="wb25a">5</td><td class="wb_a" id="wb25b">679.8</td>
+					<td class="wb_a" id="wb25a">5</td><td class="wb_a" id="wb25b">1011.5</td>
 				</tr>
 			</table>
 			
 		</td>
 		<td width="33%" align="center" id="tb3">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(3)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 3</td>
 				</tr>
 				<tr>
-					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (A)</td>
+					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (mA)</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb31')" onmouseleave="myMoveLeave('wb31')">
-					<td class="wb_a" id="wb31a">1</td><td class="wb_a" id="wb31b">390.3</td>
+					<td class="wb_a" id="wb31a">1</td><td class="wb_a" id="wb31b">984.5</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb32')" onmouseleave="myMoveLeave('wb32')">
-					<td class="wb_b" id="wb32a">2</td><td class="wb_b" id="wb32b">478.2</td>
+					<td class="wb_b" id="wb32a">2</td><td class="wb_b" id="wb32b">940.2</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb33')" onmouseleave="myMoveLeave('wb33')">
-					<td class="wb_a" id="wb33a">3</td><td class="wb_a" id="wb33b">765.3</td>
+					<td class="wb_a" id="wb33a">3</td><td class="wb_a" id="wb33b">1102.4</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb34')" onmouseleave="myMoveLeave('wb34')">
-					<td class="wb_b" id="wb34a">4</td><td class="wb_b" id="wb34b">652.5</td>
+					<td class="wb_b" id="wb34a">4</td><td class="wb_b" id="wb34b">946.0</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb35')" onmouseleave="myMoveLeave('wb35')">
-					<td class="wb_a" id="wb35a">5</td><td class="wb_a" id="wb35b">467.2</td>
+					<td class="wb_a" id="wb35a">5</td><td class="wb_a" id="wb35b">1050.7</td>
 				</tr>
 			</table>
 			
 		</td>
 	</tr>
-	<tr id="t_r2">
+	<tr id="t_r4">
 		<td colspan="3">
 			<br>
 		</td>
 	</tr>
-	<tr id="t_r3">
+	<tr id="t_r5">
 		<td align="center" id="tb4">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(4)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 4</td>
 				</tr>
 				<tr>
-					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (A)</td>
+					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (mA)</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb41')" onmouseleave="myMoveLeave('wb41')">
-					<td class="wb_a" id="wb41a">1</td><td class="wb_a" id="wb41b">462.1</td>
+					<td class="wb_a" id="wb41a">1</td><td class="wb_a" id="wb41b">1030.1</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb42')" onmouseleave="myMoveLeave('wb42')">
-					<td class="wb_b" id="wb42a">2</td><td class="wb_b" id="wb42b">488.3</td>
+					<td class="wb_b" id="wb42a">2</td><td class="wb_b" id="wb42b">1151.3</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb43')" onmouseleave="myMoveLeave('wb43')">
-					<td class="wb_a" id="wb43a">3</td><td class="wb_a" id="wb43b">592.1</td>
+					<td class="wb_a" id="wb43a">3</td><td class="wb_a" id="wb43b">907.2</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb44')" onmouseleave="myMoveLeave('wb44')">
-					<td class="wb_b" id="wb44a">4</td><td class="wb_b" id="wb44b">542.2</td>
+					<td class="wb_b" id="wb44a">4</td><td class="wb_b" id="wb44b">1064.9</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb45')" onmouseleave="myMoveLeave('wb45')">
-					<td class="wb_a" id="wb45a">5</td><td class="wb_a" id="wb45b">681.2</td>
+					<td class="wb_a" id="wb45a">5</td><td class="wb_a" id="wb45b">908.6</td>
 				</tr>
 			</table>
 			
 		</td>
 		<td align="center" id="tb5">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(5)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 5</td>
 				</tr>
 				<tr>
-					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (A)</td>
+					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (mA)</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb51')" onmouseleave="myMoveLeave('wb51')">
-					<td class="wb_a" id="wb51a">1</td><td class="wb_a" id="wb51b">710.1</td>
+					<td class="wb_a" id="wb51a">1</td><td class="wb_a" id="wb51b">971.9</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb52')" onmouseleave="myMoveLeave('wb52')">
-					<td class="wb_b" id="wb52a">2</td><td class="wb_b" id="wb52b">642.4</td>
+					<td class="wb_b" id="wb52a">2</td><td class="wb_b" id="wb52b">968.7</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb53')" onmouseleave="myMoveLeave('wb53')">
-					<td class="wb_a" id="wb53a">3</td><td class="wb_a" id="wb53b">486.3</td>
+					<td class="wb_a" id="wb53a">3</td><td class="wb_a" id="wb53b">1060.5</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb54')" onmouseleave="myMoveLeave('wb54')">
-					<td class="wb_b" id="wb54a">4</td><td class="wb_b" id="wb54b">772.3</td>
+					<td class="wb_b" id="wb54a">4</td><td class="wb_b" id="wb54b">1022.2</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb55')" onmouseleave="myMoveLeave('wb55')">
-					<td class="wb_a" id="wb55a">5</td><td class="wb_a" id="wb55b">595.2</td>
+					<td class="wb_a" id="wb55a">5</td><td class="wb_a" id="wb55b">976.4</td>
 				</tr>
 			</table>
 			
 		</td>
 		<td align="center" id="tb6">
 		
-			<table cellpadding="3" cellspacing="0" class="wb_location">
+			<table cellpadding="3" cellspacing="0" class="wb_location" onclick="myOnClick(6)">
 				<tr>
 					<td colspan="2" align="center" class="wb_title">Location 6</td>
 				</tr>
 				<tr>
-					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (A)</td>
+					<td class="wb_heading">Solar Panel (x)</td><td class="wb_heading">Current (mA)</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb61')" onmouseleave="myMoveLeave('wb61')">
-					<td class="wb_a" id="wb61a">1</td><td class="wb_a" id="wb61b">435.3</td>
+					<td class="wb_a" id="wb61a">1</td><td class="wb_a" id="wb61b">1086.2</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb62')" onmouseleave="myMoveLeave('wb62')">
-					<td class="wb_b" id="wb62a">2</td><td class="wb_b" id="wb62b">650.4</td>
+					<td class="wb_b" id="wb62a">2</td><td class="wb_b" id="wb62b">988.1</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb63')" onmouseleave="myMoveLeave('wb63')">
-					<td class="wb_a" id="wb63a">3</td><td class="wb_a" id="wb63b">630.2</td>
+					<td class="wb_a" id="wb63a">3</td><td class="wb_a" id="wb63b">1037.9</td>
 				</tr>
 				<tr id="tr_b" onmouseover="myMoveOver('wb64')" onmouseleave="myMoveLeave('wb64')">
-					<td class="wb_b" id="wb64a">4</td><td class="wb_b" id="wb64b">554.2</td>
+					<td class="wb_b" id="wb64a">4</td><td class="wb_b" id="wb64b">949.2</td>
 				</tr>
 				<tr id="tr_a" onmouseover="myMoveOver('wb65')" onmouseleave="myMoveLeave('wb65')">
-					<td class="wb_a" id="wb65a">5</td><td class="wb_a" id="wb65b">682.7</td>
+					<td class="wb_a" id="wb65a">5</td><td class="wb_a" id="wb65b">1052.3</td>
 				</tr>
+
 			</table>
 			
 		</td>
 	</tr>
+	<tr>
+		<td colspan="3">
+			<br>
+		</td>
+	</tr>
+	
 </table>
 
 </div>	
